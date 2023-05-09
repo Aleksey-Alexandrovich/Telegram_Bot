@@ -3,14 +3,24 @@ const {
 	Markup
 } = require('telegraf');
 require('dotenv').config()
-const { message } = require('telegraf/filters');
 const text = require('./const')
-const bot = new Telegraf(process.env.BOT_TOKEN)
-bot.start((ctx) => ctx.reply(`Привет ${ctx.message.from.first_name ? ctx.message.from.first_name : 
-'незнакомец'}`))
-bot.help((ctx) => ctx.reply(text.commands))
+const BOT_TOKEN = '6250657712:AAH0ivmaT2YIG-qvtJ1MILRqdtzUw3wYSdU'
+const bot = new Telegraf(BOT_TOKEN)
 
-bot.command('autopark', async (ctx) => {
+
+
+
+bot.start((ctx) => ctx.replyWithHTML(`Привет ${ctx.message.from.first_name ? ctx.message.from.first_name : 
+	'незнакомец'}`, Markup.inlineKeyboard(
+	[
+		[Markup.button.callback('Помощь', 'btn_help'),
+		Markup.button.callback('Грузовики', 'btn_autopark'),
+		Markup.button.callback('Услуги', 'btn_services')],
+	 
+	]
+)))
+
+async function replyAutopark (ctx)  {
 	try {
 		await ctx.replyWithHTML('<b>Автопарк</b>', Markup.inlineKeyboard(
 			[
@@ -22,11 +32,18 @@ bot.command('autopark', async (ctx) => {
 	} catch(e) {
 		console.error(e)
 	}
+}
+
+async function replyHelp (ctx) {
+	ctx.reply(text.commands)
+}
+
+bot.help(replyHelp)
+
+bot.command('autopark', replyAutopark)
 
 
-})
-
-bot.command('services', async (ctx) => {
+const replyServices =  async (ctx) => {
 	try {
 		await ctx.replyWithHTML('<b>Услуги</b>', Markup.inlineKeyboard(
 			[
@@ -40,7 +57,8 @@ bot.command('services', async (ctx) => {
 	}
 
 
-})
+}
+bot.command('services', replyServices)
 
 
 
@@ -67,6 +85,21 @@ function addActionBot(name, src,text) {
 	})
 
 }
+
+
+function sendTemplate (name, callback) {
+	bot.action(name, async(ctx) => {
+		try {
+			await ctx.answerCbQuery()
+		 
+			await callback(ctx);
+	
+		} catch (e) {
+			console.error(e)
+		}
+	})
+};
+
 addActionBot('btn_1', './img/gazel.jpg', text.text1)
 addActionBot('btn_2', './img/gazon.jpg', text.text2)
 addActionBot('btn_3', './img/iveco.jpg', text.text3)
@@ -76,6 +109,10 @@ addActionBot('btn_6', './img/spb-moskva.png', text.text5)
 addActionBot('btn_7', './img/cargo.png', text.text5)
 addActionBot('btn_8', './img/коммерческое .png', text.text5)
 addActionBot('btn_9', './img/marketplace.png', text.text5)
+
+sendTemplate('btn_help', replyHelp )
+sendTemplate('btn_autopark', replyAutopark )
+sendTemplate('btn_services',  replyServices)
 
 
 bot.launch();
