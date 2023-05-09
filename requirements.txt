@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 telegraf
+=======
+telegraf
+>>>>>>> b8224bcd384b2808c83ebbda08a8768db71ab866
