@@ -4,7 +4,6 @@ const {
 } = require('telegraf');
 require('dotenv').config()
 const text = require('./const')
-const BOT_TOKEN = '6250657712:AAH0ivmaT2YIG-qvtJ1MILRqdtzUw3wYSdU'
 const bot = new Telegraf(BOT_TOKEN)
 
 
